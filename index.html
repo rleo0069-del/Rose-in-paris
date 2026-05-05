@@ -3,95 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rose in Paris - 16-bit Retro Adventure</title>
+    <title>Rose in Historical Paris - 16-bit Retro</title>
     <style>
-        body { 
-            margin: 0; 
-            background: #000; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            font-family: 'Courier New', monospace;
-            overflow: hidden;
-        }
-        canvas { 
-            image-rendering: pixelated; 
-            border: 6px solid #fff; 
-            box-shadow: 0 0 40px rgba(255, 105, 180, 0.8); 
-        }
-        .overlay {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            color: white;
-            text-shadow: 2px 2px 4px #000;
-            pointer-events: none;
-        }
+        body { margin:0; background:#000; display:flex; justify-content:center; align-items:center; height:100vh; font-family:'Courier New', monospace; overflow:hidden; }
+        canvas { image-rendering:pixelated; border:6px solid #fff; box-shadow:0 0 40px rgba(255,215,0,0.7); }
+        .overlay { position:absolute; top:15px; left:15px; color:#FFD700; text-shadow:2px 2px 4px #000; pointer-events:none; }
     </style>
 </head>
 <body>
     <canvas id="game" width="640" height="360"></canvas>
     
     <div class="overlay">
-        <h2>Rose in Paris 🌸🗼</h2>
-        <p>← → or A D : Move  SPACE : Jump + Next Scene</p>
+        <h2>Rose in Historical Paris 🏛️🌹</h2>
+        <p>← → / A D : Move  SPACE : Jump + Time Travel</p>
     </div>
 
     <script>
         const canvas = document.getElementById('game');
         const ctx = canvas.getContext('2d');
-        
-        // Game constants
-        const WIDTH = 640;
-        const HEIGHT = 360;
+        const WIDTH = 640, HEIGHT = 360;
 
         let currentScene = 0;
         const scenes = [
-            "Champs-Élysées",
-            "Paris Métro",
-            "Cozy Café",
-            "Louvre Courtyard",
-            "Eiffel Tower Rooftop"
+            "Champs-Élysées 1889",
+            "Métro Opening 1900",
+            "Montmartre Café 1890s",
+            "Louvre Revolution 1793",
+            "Eiffel Tower 1889"
         ];
 
-        // Player (Rose)
-        let player = {
-            x: 100,
-            y: 220,
-            width: 22,
-            height: 32,
-            velX: 0,
-            velY: 0,
-            speed: 5,
-            jump: -15,
-            onGround: false
-        };
+        let player = { x:100, y:220, width:22, height:32, velX:0, velY:0, speed:5, jump:-15, onGround:false };
 
         let keys = {};
         let platforms = [];
 
         function loadScene(scene) {
             platforms = [];
-            player.x = 80;
-            player.y = 220;
+            player.x = 80; player.y = 220;
 
-            // Ground
-            platforms.push({x: 0, y: 300, w: WIDTH, h: 60, color: '#8B5A2B'});
+            platforms.push({x:0, y:300, w:WIDTH, h:60, color:'#8B5A2B'});
 
-            if (scene === 0) { // Champs-Élysées
-                platforms.push({x: 420, y: 240, w: 120, h: 20, color: '#A0522D'});
-            } else if (scene === 1) { // Métro
-                platforms.push({x: 120, y: 240, w: 380, h: 25, color: '#C0C0C0'});
-            }
+            if (scene === 0) platforms.push({x:380, y:230, w:140, h:25, color:'#A0522D'});
+            if (scene === 1) platforms.push({x:100, y:235, w:420, h:22, color:'#777'});
         }
 
         loadScene(currentScene);
 
-        // Keyboard controls
         window.addEventListener('keydown', e => {
             keys[e.key.toLowerCase()] = true;
-
             if (e.key === ' ') {
                 e.preventDefault();
                 if (player.onGround) player.velY = player.jump;
@@ -99,31 +58,21 @@
                 loadScene(currentScene);
             }
         });
-
-        window.addEventListener('keyup', e => {
-            keys[e.key.toLowerCase()] = false;
-        });
+        window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
 
         function update() {
-            // Horizontal movement
             player.velX = 0;
             if (keys['arrowleft'] || keys['a']) player.velX = -player.speed;
             if (keys['arrowright'] || keys['d']) player.velX = player.speed;
 
-            // Gravity
             player.velY += 0.8;
             player.x += player.velX;
             player.y += player.velY;
 
-            // Collision with platforms
             player.onGround = false;
             for (let p of platforms) {
-                if (
-                    player.x < p.x + p.w &&
-                    player.x + player.width > p.x &&
-                    player.y < p.y + p.h &&
-                    player.y + player.height > p.y
-                ) {
+                if (player.x < p.x + p.w && player.x + player.width > p.x &&
+                    player.y < p.y + p.h && player.y + player.height > p.y) {
                     if (player.velY > 0) {
                         player.y = p.y - player.height;
                         player.velY = 0;
@@ -132,78 +81,52 @@
                 }
             }
 
-            // Boundaries
             if (player.x < 0) player.x = 0;
             if (player.x > WIDTH - player.width) player.x = WIDTH - player.width;
         }
 
         function drawBackground() {
-            if (currentScene === 0) { // Champs-Élysées
-                ctx.fillStyle = '#87CEEB';
-                ctx.fillRect(0, 0, WIDTH, HEIGHT);
-                ctx.fillStyle = '#555';
-                ctx.fillRect(0, 280, WIDTH, 80);
-                // Lamppost
-                ctx.fillStyle = '#333';
-                ctx.fillRect(80, 180, 12, 120);
-            } 
-            else if (currentScene === 1) { // Métro
-                ctx.fillStyle = '#2A2A4A';
-                ctx.fillRect(0, 0, WIDTH, HEIGHT);
-                ctx.fillStyle = '#D3D3D3';
-                ctx.fillRect(0, 260, WIDTH, 100);
-            } 
-            else if (currentScene === 2) { // Café
-                ctx.fillStyle = '#FFF8E1';
-                ctx.fillRect(0, 0, WIDTH, HEIGHT);
+            if (currentScene === 0) { // 1889
+                ctx.fillStyle = '#87CEEB'; ctx.fillRect(0,0,WIDTH,HEIGHT);
+                ctx.fillStyle = '#555'; ctx.fillRect(0,280,WIDTH,80);
+            } else if (currentScene === 1) { // 1900 Metro
+                ctx.fillStyle = '#2A2A4A'; ctx.fillRect(0,0,WIDTH,HEIGHT);
+                ctx.fillStyle = '#666'; ctx.fillRect(0,260,WIDTH,100);
+            } else if (currentScene === 2) { // Montmartre
+                ctx.fillStyle = '#F4E8C1'; ctx.fillRect(0,0,WIDTH,HEIGHT);
+                ctx.fillStyle = '#8B4513'; ctx.fillRect(0,280,WIDTH,80);
+            } else if (currentScene === 3) { // Revolution
+                ctx.fillStyle = '#B22222'; ctx.fillRect(0,0,WIDTH,HEIGHT); // Red tone
+                ctx.fillStyle = '#EEE'; ctx.fillRect(0,250,WIDTH,110);
+            } else if (currentScene === 4) { // Eiffel 1889
+                ctx.fillStyle = '#1A0033'; ctx.fillRect(0,0,WIDTH,HEIGHT);
                 ctx.fillStyle = '#8B4513';
-                ctx.fillRect(0, 280, WIDTH, 80);
-            } 
-            else if (currentScene === 3) { // Louvre
-                ctx.fillStyle = '#B0E0E6';
-                ctx.fillRect(0, 0, WIDTH, HEIGHT);
-                ctx.fillStyle = '#EEE';
-                ctx.fillRect(0, 250, WIDTH, 110);
-            } 
-            else if (currentScene === 4) { // Eiffel Tower
-                ctx.fillStyle = '#1A0033';
-                ctx.fillRect(0, 0, WIDTH, HEIGHT);
-                // Eiffel Tower
-                ctx.fillStyle = '#8B4513';
-                ctx.fillRect(300, 120, 25, 200);
-                ctx.beginPath();
-                ctx.moveTo(280, 300);
-                ctx.lineTo(320, 80);
-                ctx.lineTo(355, 300);
-                ctx.fill();
+                ctx.fillRect(300,120,25,200);
+                ctx.beginPath(); ctx.moveTo(280,300); ctx.lineTo(320,80); ctx.lineTo(355,300); ctx.fill();
             }
         }
 
         function draw() {
             drawBackground();
 
-            // Draw platforms
             for (let p of platforms) {
                 ctx.fillStyle = p.color;
                 ctx.fillRect(p.x, p.y, p.w, p.h);
             }
 
-            // Draw Rose
+            // Rose in historical dress
             ctx.fillStyle = '#FF69B4';
             ctx.fillRect(player.x, player.y, player.width, player.height);
-            // Dress
-            ctx.fillStyle = '#C71585';
-            ctx.fillRect(player.x + 5, player.y + 12, 12, 18);
+            ctx.fillStyle = '#8B008B';
+            ctx.fillRect(player.x + 4, player.y + 10, 14, 20);
 
-            // Scene title
             ctx.fillStyle = 'white';
-            ctx.font = 'bold 26px Courier New';
+            ctx.font = 'bold 24px Courier New';
             ctx.textAlign = 'center';
             ctx.fillText(scenes[currentScene], WIDTH/2, 45);
 
-            // Instructions
             ctx.font = '16px Courier New';
-            ctx.fillText("Press SPACE to travel to the next Paris scene", WIDTH/2, HEIGHT - 20);
+            ctx.fillText("SPACE = Time Travel to Next Era", WIDTH/2, HEIGHT - 20);
         }
 
         function gameLoop() {
