@@ -6,7 +6,7 @@
     <title>Rose in Historical Paris - 16-bit Retro</title>
     <style>
         body { margin:0; background:#000; display:flex; justify-content:center; align-items:center; height:100vh; font-family:'Courier New', monospace; overflow:hidden; }
-        canvas { image-rendering:pixelated; border:6px solid #fff; box-shadow:0 0 40px rgba(255,215,0,0.7); }
+        canvas { image-rendering:pixelated; border:6px solid #fff; box-shadow:0 0 40px rgba(255,215,0,0.8); }
         .overlay { position:absolute; top:15px; left:15px; color:#FFD700; text-shadow:2px 2px 4px #000; pointer-events:none; }
     </style>
 </head>
@@ -33,7 +33,6 @@
         ];
 
         let player = { x:100, y:220, width:22, height:32, velX:0, velY:0, speed:5, jump:-15, onGround:false };
-
         let keys = {};
         let platforms = [];
 
@@ -41,10 +40,11 @@
             platforms = [];
             player.x = 80; player.y = 220;
 
-            platforms.push({x:0, y:300, w:WIDTH, h:60, color:'#8B5A2B'});
+            // Ground
+            platforms.push({x:0, y:300, w:WIDTH, h:60, color:'#654321'});
 
-            if (scene === 0) platforms.push({x:380, y:230, w:140, h:25, color:'#A0522D'});
-            if (scene === 1) platforms.push({x:100, y:235, w:420, h:22, color:'#777'});
+            if (scene === 0) platforms.push({x:380, y:230, w:160, h:25, color:'#8B5A2B'});
+            if (scene === 1) platforms.push({x:90, y:235, w:450, h:22, color:'#555'});
         }
 
         loadScene(currentScene);
@@ -72,12 +72,10 @@
             player.onGround = false;
             for (let p of platforms) {
                 if (player.x < p.x + p.w && player.x + player.width > p.x &&
-                    player.y < p.y + p.h && player.y + player.height > p.y) {
-                    if (player.velY > 0) {
-                        player.y = p.y - player.height;
-                        player.velY = 0;
-                        player.onGround = true;
-                    }
+                    player.y < p.y + p.h && player.y + player.height > p.y && player.velY > 0) {
+                    player.y = p.y - player.height;
+                    player.velY = 0;
+                    player.onGround = true;
                 }
             }
 
@@ -86,47 +84,83 @@
         }
 
         function drawBackground() {
-            if (currentScene === 0) { // 1889
+            ctx.save();
+
+            if (currentScene === 0) { // Champs-Élysées 1889
                 ctx.fillStyle = '#87CEEB'; ctx.fillRect(0,0,WIDTH,HEIGHT);
                 ctx.fillStyle = '#555'; ctx.fillRect(0,280,WIDTH,80);
-            } else if (currentScene === 1) { // 1900 Metro
-                ctx.fillStyle = '#2A2A4A'; ctx.fillRect(0,0,WIDTH,HEIGHT);
-                ctx.fillStyle = '#666'; ctx.fillRect(0,260,WIDTH,100);
-            } else if (currentScene === 2) { // Montmartre
+                // Buildings
+                ctx.fillStyle = '#C19A6B'; 
+                ctx.fillRect(0,150,120,150); ctx.fillRect(520,140,120,160);
+                ctx.fillStyle = '#A67B5B';
+                ctx.fillRect(150,170,80,130); ctx.fillRect(400,160,90,140);
+                // Flags
+                ctx.fillStyle = '#FF0000'; ctx.fillRect(80,160,25,15);
+            } 
+            else if (currentScene === 1) { // Métro 1900
+                ctx.fillStyle = '#1F2A44'; ctx.fillRect(0,0,WIDTH,HEIGHT);
+                ctx.fillStyle = '#444'; ctx.fillRect(0,260,WIDTH,100);
+                // Tunnel entrance
+                ctx.fillStyle = '#222'; ctx.fillRect(180,180,280,120);
+                ctx.fillStyle = '#666'; ctx.fillRect(200,200,240,30);
+            } 
+            else if (currentScene === 2) { // Montmartre Café
                 ctx.fillStyle = '#F4E8C1'; ctx.fillRect(0,0,WIDTH,HEIGHT);
                 ctx.fillStyle = '#8B4513'; ctx.fillRect(0,280,WIDTH,80);
-            } else if (currentScene === 3) { // Revolution
-                ctx.fillStyle = '#B22222'; ctx.fillRect(0,0,WIDTH,HEIGHT); // Red tone
-                ctx.fillStyle = '#EEE'; ctx.fillRect(0,250,WIDTH,110);
-            } else if (currentScene === 4) { // Eiffel 1889
-                ctx.fillStyle = '#1A0033'; ctx.fillRect(0,0,WIDTH,HEIGHT);
-                ctx.fillStyle = '#8B4513';
-                ctx.fillRect(300,120,25,200);
-                ctx.beginPath(); ctx.moveTo(280,300); ctx.lineTo(320,80); ctx.lineTo(355,300); ctx.fill();
+                // Café building
+                ctx.fillStyle = '#D2B48C'; ctx.fillRect(80,120,200,180);
+                ctx.fillStyle = '#8B0000'; ctx.fillRect(120,170,40,30); // Door
+                // Tables
+                ctx.fillStyle = '#654321'; ctx.fillRect(350,260,80,40);
+            } 
+            else if (currentScene === 3) { // Louvre Revolution
+                ctx.fillStyle = '#8B1E1E'; ctx.fillRect(0,0,WIDTH,HEIGHT);
+                ctx.fillStyle = '#DDD'; ctx.fillRect(0,250,WIDTH,110);
+                // Big Louvre-style building
+                ctx.fillStyle = '#CCC'; 
+                ctx.fillRect(50,100,540,200);
+                ctx.fillStyle = '#8B1E1E'; ctx.fillRect(200,50,240,80); // Roof
+            } 
+            else if (currentScene === 4) { // Eiffel 1889
+                ctx.fillStyle = '#0F001F'; ctx.fillRect(0,0,WIDTH,HEIGHT);
+                // Eiffel Tower (detailed)
+                ctx.fillStyle = '#8B5A2B';
+                ctx.fillRect(295,110,35,210);
+                ctx.beginPath();
+                ctx.moveTo(240,300); ctx.lineTo(320,70); ctx.lineTo(400,300); ctx.fill();
+                // Lights
+                ctx.fillStyle = '#FF0';
+                for (let i = 0; i < 8; i++) {
+                    ctx.fillRect(300 + Math.sin(i)*8, 130 + i*20, 6, 6);
+                }
             }
+
+            ctx.restore();
         }
 
         function draw() {
             drawBackground();
 
+            // Platforms
             for (let p of platforms) {
                 ctx.fillStyle = p.color;
                 ctx.fillRect(p.x, p.y, p.w, p.h);
             }
 
-            // Rose in historical dress
+            // Rose
             ctx.fillStyle = '#FF69B4';
             ctx.fillRect(player.x, player.y, player.width, player.height);
             ctx.fillStyle = '#8B008B';
             ctx.fillRect(player.x + 4, player.y + 10, 14, 20);
 
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 24px Courier New';
+            // Scene title
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 26px Courier New';
             ctx.textAlign = 'center';
             ctx.fillText(scenes[currentScene], WIDTH/2, 45);
 
             ctx.font = '16px Courier New';
-            ctx.fillText("SPACE = Time Travel to Next Era", WIDTH/2, HEIGHT - 20);
+            ctx.fillText("SPACE = Time Travel", WIDTH/2, HEIGHT - 20);
         }
 
         function gameLoop() {
