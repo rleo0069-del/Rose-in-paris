@@ -18,15 +18,14 @@
         canvas { 
             image-rendering: pixelated; 
             border: 8px solid #ffd700; 
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.9);
-            background: #000;
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.9);
         }
         .overlay { 
             position: absolute; 
             top: 20px; 
             left: 20px; 
             color: #ffd700; 
-            text-shadow: 0 0 10px #000; 
+            text-shadow: 2px 2px 8px #000; 
             pointer-events: none;
             z-index: 10;
         }
@@ -55,19 +54,19 @@
             "Eiffel Tower 1889"
         ];
 
-        let player = { x:100, y:220, width:22, height:32, velX:0, velY:0, speed:5, jump:-15, onGround:false };
+        let player = { x: 100, y: 220, width: 22, height: 32, velX: 0, velY: 0, speed: 5, jump: -15, onGround: false };
         let keys = {};
         let platforms = [];
 
         function loadScene(scene) {
             platforms = [];
-            player.x = 80; 
+            player.x = 80;
             player.y = 220;
 
-            platforms.push({x:0, y:300, w:WIDTH, h:60, color:'#654321'});
+            platforms.push({x: 0, y: 300, w: WIDTH, h: 60, color: '#654321'});
 
-            if (scene === 0) platforms.push({x:380, y:230, w:160, h:25, color:'#8B5A2B'});
-            if (scene === 1) platforms.push({x:90, y:235, w:450, h:22, color:'#555'});
+            if (scene === 0) platforms.push({x: 380, y: 230, w: 160, h: 25, color: '#8B5A2B'});
+            if (scene === 1) platforms.push({x: 90, y: 235, w: 450, h: 22, color: '#555'});
         }
 
         loadScene(currentScene);
@@ -81,7 +80,10 @@
                 loadScene(currentScene);
             }
         });
-        window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+        window.addEventListener('keyup', e => {
+            keys[e.key.toLowerCase()] = false;
+        });
 
         function update() {
             player.velX = 0;
@@ -107,38 +109,38 @@
         }
 
         function drawBackground() {
-            if (currentScene === 0) { // Champs-Élysées
-                ctx.fillStyle = '#87CEEB'; ctx.fillRect(0,0,WIDTH,HEIGHT);
-                ctx.fillStyle = '#555'; ctx.fillRect(0,280,WIDTH,80);
-                ctx.fillStyle = '#C19A6B'; ctx.fillRect(0,150,120,150); ctx.fillRect(520,140,120,160);
-                ctx.fillStyle = '#A67B5B'; ctx.fillRect(150,170,80,130); ctx.fillRect(400,160,90,140);
+            if (currentScene === 0) {
+                ctx.fillStyle = '#87CEEB'; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+                ctx.fillStyle = '#555'; ctx.fillRect(0, 280, WIDTH, 80);
+                ctx.fillStyle = '#C19A6B'; ctx.fillRect(0, 150, 120, 150); ctx.fillRect(520, 140, 120, 160);
+                ctx.fillStyle = '#A67B5B'; ctx.fillRect(150, 170, 80, 130); ctx.fillRect(400, 160, 90, 140);
             } 
-            else if (currentScene === 1) { // Métro
-                ctx.fillStyle = '#1F2A44'; ctx.fillRect(0,0,WIDTH,HEIGHT);
-                ctx.fillStyle = '#444'; ctx.fillRect(0,260,WIDTH,100);
-                ctx.fillStyle = '#222'; ctx.fillRect(180,180,280,120);
+            else if (currentScene === 1) {
+                ctx.fillStyle = '#1F2A44'; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+                ctx.fillStyle = '#444'; ctx.fillRect(0, 260, WIDTH, 100);
+                ctx.fillStyle = '#222'; ctx.fillRect(180, 180, 280, 120);
             } 
-            else if (currentScene === 2) { // Montmartre
-                ctx.fillStyle = '#F4E8C1'; ctx.fillRect(0,0,WIDTH,HEIGHT);
-                ctx.fillStyle = '#8B4513'; ctx.fillRect(0,280,WIDTH,80);
-                ctx.fillStyle = '#D2B48C'; ctx.fillRect(80,120,200,180);
-                ctx.fillStyle = '#8B0000'; ctx.fillRect(120,170,40,30);
+            else if (currentScene === 2) {
+                ctx.fillStyle = '#F4E8C1'; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+                ctx.fillStyle = '#8B4513'; ctx.fillRect(0, 280, WIDTH, 80);
+                ctx.fillStyle = '#D2B48C'; ctx.fillRect(80, 120, 200, 180);
+                ctx.fillStyle = '#8B0000'; ctx.fillRect(120, 170, 40, 30);
             } 
-            else if (currentScene === 3) { // Revolution
-                ctx.fillStyle = '#8B1E1E'; ctx.fillRect(0,0,WIDTH,HEIGHT);
-                ctx.fillStyle = '#DDD'; ctx.fillRect(0,250,WIDTH,110);
-                ctx.fillStyle = '#CCC'; ctx.fillRect(50,100,540,200);
-                ctx.fillStyle = '#8B1E1E'; ctx.fillRect(200,50,240,80);
+            else if (currentScene === 3) {
+                ctx.fillStyle = '#8B1E1E'; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+                ctx.fillStyle = '#DDD'; ctx.fillRect(0, 250, WIDTH, 110);
+                ctx.fillStyle = '#CCC'; ctx.fillRect(50, 100, 540, 200);
+                ctx.fillStyle = '#8B1E1E'; ctx.fillRect(200, 50, 240, 80);
             } 
-            else if (currentScene === 4) { // Eiffel
-                ctx.fillStyle = '#0F001F'; ctx.fillRect(0,0,WIDTH,HEIGHT);
+            else if (currentScene === 4) {
+                ctx.fillStyle = '#0F001F'; ctx.fillRect(0, 0, WIDTH, HEIGHT);
                 ctx.fillStyle = '#8B5A2B';
-                ctx.fillRect(295,110,35,210);
+                ctx.fillRect(295, 110, 35, 210);
                 ctx.beginPath();
-                ctx.moveTo(240,300); ctx.lineTo(320,70); ctx.lineTo(400,300); ctx.fill();
+                ctx.moveTo(240, 300); ctx.lineTo(320, 70); ctx.lineTo(400, 300); ctx.fill();
                 ctx.fillStyle = '#FF0';
                 for (let i = 0; i < 12; i++) {
-                    ctx.fillRect(305, 130 + i*18, 6, 6);
+                    ctx.fillRect(305, 130 + i * 18, 6, 6);
                 }
             }
         }
@@ -160,22 +162,15 @@
             ctx.fillStyle = '#FFD700';
             ctx.font = 'bold 26px Courier New';
             ctx.textAlign = 'center';
-            ctx.fillText(scenes[currentScene], WIDTH/2, 45);
+            ctx.fillText(scenes[currentScene], WIDTH / 2, 45);
 
             ctx.font = '16px Courier New';
-            ctx.fillText("SPACE = Time Travel", WIDTH/2, HEIGHT - 20);
+            ctx.fillText("SPACE = Time Travel", WIDTH / 2, HEIGHT - 20);
         }
 
         function gameLoop() {
             update();
             draw();
-            requestAnimationFrame(gameLoop);
-        }
-
-        gameLoop();
-    </script>
-</body>
-</html>
             requestAnimationFrame(gameLoop);
         }
 
