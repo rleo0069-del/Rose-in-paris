@@ -3,11 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rose in Historical Paris - 16-bit Retro</title>
+    <title>Rose in Historical Paris 🏛️🌹</title>
     <style>
-        body { margin:0; background:#000; display:flex; justify-content:center; align-items:center; height:100vh; font-family:'Courier New', monospace; overflow:hidden; }
-        canvas { image-rendering:pixelated; border:6px solid #fff; box-shadow:0 0 40px rgba(255,215,0,0.8); }
-        .overlay { position:absolute; top:15px; left:15px; color:#FFD700; text-shadow:2px 2px 4px #000; pointer-events:none; }
+        body { 
+            margin: 0; 
+            background: #0a001f; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        canvas { 
+            image-rendering: pixelated; 
+            border: 8px solid #ffd700; 
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.9);
+            background: #000;
+        }
+        .overlay { 
+            position: absolute; 
+            top: 20px; 
+            left: 20px; 
+            color: #ffd700; 
+            text-shadow: 0 0 10px #000; 
+            pointer-events: none;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -21,7 +43,8 @@
     <script>
         const canvas = document.getElementById('game');
         const ctx = canvas.getContext('2d');
-        const WIDTH = 640, HEIGHT = 360;
+        const WIDTH = 640;
+        const HEIGHT = 360;
 
         let currentScene = 0;
         const scenes = [
@@ -38,9 +61,9 @@
 
         function loadScene(scene) {
             platforms = [];
-            player.x = 80; player.y = 220;
+            player.x = 80; 
+            player.y = 220;
 
-            // Ground
             platforms.push({x:0, y:300, w:WIDTH, h:60, color:'#654321'});
 
             if (scene === 0) platforms.push({x:380, y:230, w:160, h:25, color:'#8B5A2B'});
@@ -84,64 +107,45 @@
         }
 
         function drawBackground() {
-            ctx.save();
-
-            if (currentScene === 0) { // Champs-Élysées 1889
+            if (currentScene === 0) { // Champs-Élysées
                 ctx.fillStyle = '#87CEEB'; ctx.fillRect(0,0,WIDTH,HEIGHT);
                 ctx.fillStyle = '#555'; ctx.fillRect(0,280,WIDTH,80);
-                // Buildings
-                ctx.fillStyle = '#C19A6B'; 
-                ctx.fillRect(0,150,120,150); ctx.fillRect(520,140,120,160);
-                ctx.fillStyle = '#A67B5B';
-                ctx.fillRect(150,170,80,130); ctx.fillRect(400,160,90,140);
-                // Flags
-                ctx.fillStyle = '#FF0000'; ctx.fillRect(80,160,25,15);
+                ctx.fillStyle = '#C19A6B'; ctx.fillRect(0,150,120,150); ctx.fillRect(520,140,120,160);
+                ctx.fillStyle = '#A67B5B'; ctx.fillRect(150,170,80,130); ctx.fillRect(400,160,90,140);
             } 
-            else if (currentScene === 1) { // Métro 1900
+            else if (currentScene === 1) { // Métro
                 ctx.fillStyle = '#1F2A44'; ctx.fillRect(0,0,WIDTH,HEIGHT);
                 ctx.fillStyle = '#444'; ctx.fillRect(0,260,WIDTH,100);
-                // Tunnel entrance
                 ctx.fillStyle = '#222'; ctx.fillRect(180,180,280,120);
-                ctx.fillStyle = '#666'; ctx.fillRect(200,200,240,30);
             } 
-            else if (currentScene === 2) { // Montmartre Café
+            else if (currentScene === 2) { // Montmartre
                 ctx.fillStyle = '#F4E8C1'; ctx.fillRect(0,0,WIDTH,HEIGHT);
                 ctx.fillStyle = '#8B4513'; ctx.fillRect(0,280,WIDTH,80);
-                // Café building
                 ctx.fillStyle = '#D2B48C'; ctx.fillRect(80,120,200,180);
-                ctx.fillStyle = '#8B0000'; ctx.fillRect(120,170,40,30); // Door
-                // Tables
-                ctx.fillStyle = '#654321'; ctx.fillRect(350,260,80,40);
+                ctx.fillStyle = '#8B0000'; ctx.fillRect(120,170,40,30);
             } 
-            else if (currentScene === 3) { // Louvre Revolution
+            else if (currentScene === 3) { // Revolution
                 ctx.fillStyle = '#8B1E1E'; ctx.fillRect(0,0,WIDTH,HEIGHT);
                 ctx.fillStyle = '#DDD'; ctx.fillRect(0,250,WIDTH,110);
-                // Big Louvre-style building
-                ctx.fillStyle = '#CCC'; 
-                ctx.fillRect(50,100,540,200);
-                ctx.fillStyle = '#8B1E1E'; ctx.fillRect(200,50,240,80); // Roof
+                ctx.fillStyle = '#CCC'; ctx.fillRect(50,100,540,200);
+                ctx.fillStyle = '#8B1E1E'; ctx.fillRect(200,50,240,80);
             } 
-            else if (currentScene === 4) { // Eiffel 1889
+            else if (currentScene === 4) { // Eiffel
                 ctx.fillStyle = '#0F001F'; ctx.fillRect(0,0,WIDTH,HEIGHT);
-                // Eiffel Tower (detailed)
                 ctx.fillStyle = '#8B5A2B';
                 ctx.fillRect(295,110,35,210);
                 ctx.beginPath();
                 ctx.moveTo(240,300); ctx.lineTo(320,70); ctx.lineTo(400,300); ctx.fill();
-                // Lights
                 ctx.fillStyle = '#FF0';
-                for (let i = 0; i < 8; i++) {
-                    ctx.fillRect(300 + Math.sin(i)*8, 130 + i*20, 6, 6);
+                for (let i = 0; i < 12; i++) {
+                    ctx.fillRect(305, 130 + i*18, 6, 6);
                 }
             }
-
-            ctx.restore();
         }
 
         function draw() {
             drawBackground();
 
-            // Platforms
             for (let p of platforms) {
                 ctx.fillStyle = p.color;
                 ctx.fillRect(p.x, p.y, p.w, p.h);
@@ -153,7 +157,6 @@
             ctx.fillStyle = '#8B008B';
             ctx.fillRect(player.x + 4, player.y + 10, 14, 20);
 
-            // Scene title
             ctx.fillStyle = '#FFD700';
             ctx.font = 'bold 26px Courier New';
             ctx.textAlign = 'center';
@@ -166,6 +169,13 @@
         function gameLoop() {
             update();
             draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
             requestAnimationFrame(gameLoop);
         }
 
