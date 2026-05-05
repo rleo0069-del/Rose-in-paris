@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rose in Paris - 16-bit Retro Adventure</title>
+    <style>
+        body { margin:0; background:#000; display:flex; justify-content:center; align-items:center; height:100vh; font-family: 'Courier New', monospace; }
+        canvas { image-rendering: pixelated; border: 4px solid #fff; box-shadow: 0 0 30px rgba(255,105,180,0.6); }
+        .info { position:absolute; top:10px; left:10px; color:#fff; text-shadow: 2px 2px 4px #000; }
+    </style>
+</head>
+<body>
+    <canvas id="game" width="1280" height="720"></canvas>
+    <div class="info">
+        <h2>Rose in Paris 🌸🗼</h2>
+        <p>← → or A D : Move  SPACE : Jump + Next Scene</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 640;
+        canvas.height = 360;
+
+        // Retro colors
+        const PARIS_SKY = '#87CEEB';
+        const PINK = '#FF69B4';
+        const GOLD = '#FFD700';
+
+        let currentScene = 0;
+        const scenes = [
+            "Champs-Élysées",
+            "Paris Métro",
+            "Cozy Café",
+            "Louvre Courtyard",
+            "Eiffel Tower Rooftop"
+        ];
+
+        // Player
+        let player = {
+            x: 100,
+            y: 200,
+            width: 22,
+            height: 32,
+            velX: 0,
+            velY: 0,
+            speed: 5,
+            jump: -15,
+            onGround: false
+        };
+
+        let keys = {};
+        let platforms = [];
+
+        function loadScene(scene) {
+            platforms = [];
+            player.x = 80;
+            player.y = 220;
+
+            // Ground
+            platforms.push({x:0, y:300, w:640, h:60, color:'#8B5A2B'});
+
+            if (scene === 0) { // Champs-Élysées
+                platforms.push({x:420, y:240, w:120, h:20, color:'#A0522D'});
+            } else if (scene === 1) { // Métro
+                platforms.push({x:120, y:240, w:380, h:25, color:'#C0C0C0'});
+            } else if (scene === 4) { // Eiffel
+                // No extra platforms needed
+            }
+        }
+
+        loadScene(currentScene);
+
+        // Keyboard
+        window.addEventListener('keydown', e => {
+            keys[e.key.toLowerCase()] = true;
+            if (e.key === ' ') {
+                if (player.onGround) player.velY = player.jump;
+                currentScene = (currentScene + 1) % scenes.length;
+                loadScene(currentScene);
+            }
+        });
+        window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+        function update() {
+            // Movement
+            player.velX = 0;
+            if (keys['arrowleft'] || keys['a']) player.velX = -player.speed;
+            if (keys['arrowright'] || keys['d']) player.velX = player.speed;
+
+            // Gravity
+            player.velY += 0.8;
+            player.x += player.velX;
+            player.y += player.velY;
+
+            // Collision
+            player.onGround = false;
+            for (let p of platforms) {
+                if (
+                    player.x < p.x + p.w &&
+                    player.x + player.width > p.x &&
+                    player.y < p.y + p.h &&
+                    player.y + player.height > p.y
+                ) {
+                    if (player.velY > 0 && player.y < p.y) {
+                        player.y = p.y - player.height;
+                        player.velY = 0;
+                        player.onGround = true;
+                    }
+                }
+            }
+
+            // Keep in bounds
+            if (player.x < 0) player.x = 0;
+            if (player.x > 640 - player.width) player.x = 640 - player.width;
+        }
+
+        function drawBackground() {
+            if (currentScene === 0) { // Street
+                ctx.fillStyle = PARIS_SKY;
+                ctx.fillRect(0, 0, 640, 360);
+                ctx.fillStyle = '#555';
+                ctx.fillRect(0, 280, 640, 80); // Road
+                // Simple lamppost
+                ctx.fillStyle = '#333';
+                ctx.fillRect(80, 180, 12, 120);
+            } 
+            else if (currentScene === 1) { // Métro
+                ctx.fillStyle = '#2A2A4A';
+                ctx.fillRect(0, 0, 640, 360);
+                ctx.fillStyle = '#D3D3D3';
+                ctx.fillRect(0, 260, 640, 100);
+            } 
+            else if (currentScene === 2) { // Café
+                ctx.fillStyle = '#FFF8E1';
+                ctx.fillRect(0, 0, 640, 360);
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(0, 280, 640, 80);
+            } 
+            else if (currentScene === 3) { // Louvre
+                ctx.fillStyle = '#B0E0E6';
+                ctx.fillRect(0, 0, 640, 360);
+                ctx.fillStyle = '#EEE';
+                ctx.fillRect(0, 250, 640, 110);
+            } 
+            else if (currentScene === 4) { // Eiffel + Fireworks
+                ctx.fillStyle = '#1A0033';
+                ctx.fillRect(0, 0, 640, 360);
+                // Eiffel Tower
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(300, 120, 25, 200);
+                ctx.beginPath();
+                ctx.moveTo(280, 300);
+                ctx.lineTo(320, 80);
+                ctx.lineTo(355, 300);
+                ctx.fill();
+            }
+        }
+
+        function draw() {
+            drawBackground();
+
+            // Platforms
+            for (let p of platforms) {
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.w, p.h);
+            }
+
+            // Rose (player)
+            ctx.fillStyle = PINK;
+            ctx.fillRect(player.x, player.y, player
